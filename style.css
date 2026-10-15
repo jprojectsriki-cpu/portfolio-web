@@ -1309,3 +1309,110 @@ section[id] { scroll-margin-top: var(--header-h); }
 }
 
 .product-list .empty-note { margin-bottom: 3rem; }
+
+/* ---------------------------------------------------------
+ * 送信中ローディング(ファミコン風)
+ * --------------------------------------------------------- */
+.contact-main { position: relative; }
+
+.send-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    /* 下のフォームをうっすら残す、ドット模様のカバー */
+    background:
+        radial-gradient(rgba(42, 31, 20, 0.16) 1px, transparent 1.4px) 0 0 / 6px 6px,
+        rgba(250, 246, 232, 0.88);
+}
+.send-overlay[hidden] { display: none; }
+
+.send-box {
+    width: min(100%, 360px);
+    background: #FFFDF4;
+    border: 4px solid var(--text-main);
+    box-shadow: 6px 6px 0px var(--fc-gold);
+}
+
+.send-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--text-main);
+    color: #FAF6E8;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+}
+
+.send-body {
+    padding: 1.4rem 1.2rem 1.3rem;
+    text-align: center;
+}
+
+.send-title {
+    font-size: 1.25rem;
+    color: var(--text-main);
+    letter-spacing: 0.06em;
+}
+
+/* 「...」を1つずつ増やす */
+.send-dots::after {
+    content: '';
+    display: inline-block;
+    width: 1.6em;
+    text-align: left;
+    animation: sendDots 1.2s steps(1) infinite;
+}
+@keyframes sendDots {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+}
+
+/* 10マスのドット進行バー */
+.pixel-bar {
+    display: flex;
+    gap: 4px;
+    margin: 1.1rem auto 1rem;
+    padding: 5px;
+    background: #FFFDF4;
+    border: 3px solid var(--text-main);
+}
+.pixel-bar i {
+    flex: 1;
+    height: 16px;
+    background: #E3D8B8;
+    animation: pixelRun 1.2s linear infinite;
+    animation-delay: calc(var(--i) * 0.1s);
+}
+@keyframes pixelRun {
+    0%, 40%  { background: var(--fc-red); }
+    41%, 100% { background: #E3D8B8; }
+}
+
+.send-note {
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.7;
+    color: var(--text-sub);
+}
+
+/* 送信ボタン: 送信中はアイコンが飛んでいく */
+.contact-card .btn.is-sending { cursor: progress; }
+.contact-card .btn.is-sending .iconhub-icon { animation: planeFly 0.8s steps(4) infinite; }
+@keyframes planeFly {
+    0%   { transform: translate(0, 0); opacity: 1; }
+    75%  { transform: translate(8px, -8px); opacity: 0; }
+    100% { transform: translate(0, 0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .send-dots::after { animation: none; content: '...'; }
+    .pixel-bar i { animation: none; background: var(--fc-red); opacity: 0.8; }
+    .contact-card .btn.is-sending .iconhub-icon { animation: none; }
+}

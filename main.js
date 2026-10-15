@@ -280,11 +280,25 @@
         }
         if (msg) msg.addEventListener('input', updateCount);
 
+        var overlay = document.getElementById('sendOverlay');
+        var MIN_LOADING_MS = 800; // 一瞬で消えてチラつかないよう、最低限は表示する
+        var startedAt = 0;
+
+        function setSending(on) {
+            btn.disabled = on;
+            btn.classList.toggle('is-sending', on);
+            form.setAttribute('aria-busy', String(on));
+            label.textContent = on ? '送信中...' : '送信する';
+            if (overlay) overlay.hidden = !on;
+        }
+
         function finish(ok, text) {
-            btn.disabled = false;
-            label.textContent = '送信する';
-            status.className = ok ? 'form-status' : 'form-status is-error';
-            status.textContent = text;
+            var wait = Math.max(0, MIN_LOADING_MS - (Date.now() - startedAt));
+            setTimeout(function () {
+                setSending(false);
+                status.className = ok ? 'form-status' : 'form-status is-error';
+                status.textContent = text;
+            }, wait);
         }
 
         form.addEventListener('submit', function (e) {
@@ -300,8 +314,8 @@
                 website: fd.get('website')
             };
 
-            btn.disabled = true;
-            label.textContent = '送信中...';
+            startedAt = Date.now();
+            setSending(true);
             status.textContent = '';
             status.className = 'form-status';
 
